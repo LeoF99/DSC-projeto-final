@@ -23,7 +23,7 @@ public class UsuarioServico {
 	
 	@PostConstruct
 	public void initDisciplinas() {
-		Usuario usuario = new Usuario("email@email.com", "Leo", "Silva", "12345", "12345");
+		Usuario usuario = new Usuario("email@email.com", "Leo", "Silva", "12345", "12345", null);
 		
 		this.usuarioRepositorio.save(usuario);
 	}
