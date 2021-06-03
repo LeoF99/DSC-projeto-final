@@ -21,8 +21,12 @@ public class Usuario {
 	
 	private String ultimoNome;
 	
-	private String NumeroCartao;
+	private String numeroCartao;
 	
 	private String senha;
+	
+	Usuario() {
+		
+	}
 	
 }
