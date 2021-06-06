@@ -20,6 +20,7 @@ import com.ufpb.ajude.dtos.CriaCampanhaDTO;
 import com.ufpb.ajude.repositorios.UsuarioRepositorio;
 import com.ufpb.ajude.entidades.Usuario;
 import com.ufpb.ajude.servicos.UsuarioServico;
+import com.ufpb.ajude.dtos.AtualizaCampanhaDTO;
 
 @Service
 public class campanhaServico {
@@ -136,7 +137,7 @@ public class campanhaServico {
 	}
 	
 	public Campanha concluiCampanha(Long id, String email, String header) throws ServletException {
-Optional<Usuario> usuario = this.usuarioRepositorio.findById(email);
+		Optional<Usuario> usuario = this.usuarioRepositorio.findById(email);
 		
 		if(usuario.isPresent()) {
 			if (this.usuarioServico.usuarioTemPermissao(header, email)) {
@@ -153,6 +154,32 @@ Optional<Usuario> usuario = this.usuarioRepositorio.findById(email);
 				this.campanhaRepositorio.save(campanha);
 				
 				return campanha;
+			}
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		}
+		throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+	}
+	
+	public Campanha atualizaCampanha(Long id, AtualizaCampanhaDTO campanha, String email, String header) throws ServletException, ParseException {
+		Optional<Usuario> usuario = this.usuarioRepositorio.findById(email);
+		
+		if(usuario.isPresent()) {
+			if(this.usuarioServico.usuarioTemPermissao(header, email)) {
+				Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
+				
+				if(buscaCampanha.isEmpty()) {
+					throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+				}
+				
+				Campanha campanhaAtualizada = buscaCampanha.get();
+				
+				campanhaAtualizada.setDescricao(campanha.getDescricao());
+				campanhaAtualizada.setDeadline(new SimpleDateFormat("dd/MM/yyyy").parse(campanha.getDeadline()));
+				campanhaAtualizada.setMeta(campanha.getMeta());
+				
+				this.campanhaRepositorio.save(campanhaAtualizada);
+				
+				return campanhaAtualizada;
 			}
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
 		}

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.http.HttpStatus;
 
+import java.text.ParseException;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -24,6 +25,7 @@ import com.ufpb.ajude.entidades.Campanha;
 import com.ufpb.ajude.servicos.campanhaServico;
 import com.ufpb.ajude.dtos.CriaCampanhaDTO;
 import com.ufpb.ajude.dtos.BuscaCampanhaDTO;
+import com.ufpb.ajude.dtos.AtualizaCampanhaDTO;
 
 @RestController
 public class CampanhasControlador {
@@ -73,6 +75,22 @@ public class CampanhasControlador {
 			Campanha campanha = this.campanhaServico.concluiCampanha(id, email, header);
 			
 			return new ResponseEntity<Campanha>(campanha, HttpStatus.OK);
+		} catch (HttpClientErrorException e) {
+			return new ResponseEntity<Campanha>(e.getStatusCode());
+		}
+	}
+	
+	@PutMapping("/auth/campanhas/{id}")
+	public ResponseEntity<Campanha> atualizaCampanha(@PathVariable Long id, @RequestBody AtualizaCampanhaDTO campanha, @RequestParam String email, @RequestHeader("Authorization") String header) throws ServletException, ParseException {
+		try {
+			Campanha campanhaAtualizada = this.campanhaServico.atualizaCampanha(
+				id,
+				campanha,
+				email,
+				header
+			);
+			
+			return new ResponseEntity<Campanha>(campanhaAtualizada, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<Campanha>(e.getStatusCode());
 		}
