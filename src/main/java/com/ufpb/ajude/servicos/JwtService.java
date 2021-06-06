@@ -2,6 +2,8 @@ package com.ufpb.ajude.servicos;
 
 import java.util.Date;
 
+import javax.servlet.ServletException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,7 @@ import com.ufpb.ajude.dtos.RespostaDeLogin;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
 
 @Service
 public class JwtService {
@@ -31,5 +34,21 @@ public class JwtService {
 		return Jwts.builder().setSubject(email)
 				.signWith(SignatureAlgorithm.HS512, TOKEN_KEY)
 				.setExpiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000)).compact();// 30 min
+	}
+	
+	public String getSujeitoDoToken(String authorizationHeader) throws ServletException {
+		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+			throw new ServletException("Token inexistente ou mal formatado!");
+		}
+		
+		String token = authorizationHeader.substring(7);
+
+		String subject = null;
+		try {
+			subject = Jwts.parser().setSigningKey(TOKEN_KEY).parseClaimsJws(token).getBody().getSubject();
+		} catch (SignatureException e) {
+			throw new ServletException("Token invalido ou expirado!");
+		}
+		return subject;
 	}
 }

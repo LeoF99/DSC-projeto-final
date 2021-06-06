@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.ServletException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import com.ufpb.ajude.entidades.Campanha;
 import com.ufpb.ajude.dtos.CriaCampanhaDTO;
 import com.ufpb.ajude.repositorios.UsuarioRepositorio;
 import com.ufpb.ajude.entidades.Usuario;
+import com.ufpb.ajude.servicos.UsuarioServico;
 
 @Service
 public class campanhaServico {
@@ -25,6 +28,9 @@ public class campanhaServico {
 	
 	@Autowired
 	private UsuarioRepositorio usuarioRepositorio;
+	
+	@Autowired
+	private UsuarioServico usuarioServico;
 	
 	public campanhaServico(CampanhaRepositorio campanhaRepositorio, UsuarioRepositorio usuarioRepositorio) {
 		this.campanhaRepositorio = campanhaRepositorio;
@@ -78,6 +84,7 @@ public class campanhaServico {
 			List<Campanha> apenasAtivas = new ArrayList<Campanha>();
 			
 			for(Campanha c : todasCampanhas) {
+				this.atualizaStatusVencido(c);
 				if(c.getStatus().equals("Ativa")) {
 					String nome = c.getNome().toLowerCase();
 					
@@ -93,6 +100,7 @@ public class campanhaServico {
 		List<Campanha> matchBusca = new ArrayList<Campanha>();
 		
 		for(Campanha c : todasCampanhas) {
+			this.atualizaStatusVencido(c);
 			String nome = c.getNome().toLowerCase();
 				
 			if(nome.contains(busca.toLowerCase())) {
@@ -103,46 +111,59 @@ public class campanhaServico {
 		return matchBusca;
 	}
 	
-	public Campanha encerraCampanha(Long id) {
-		Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
+	public Campanha encerraCampanha(Long id, String email, String header) throws ServletException {
+		Optional<Usuario> usuario = this.usuarioRepositorio.findById(email);
 		
-		if(!buscaCampanha.isPresent()) {
+		if(usuario.isPresent()) {
+			if (this.usuarioServico.usuarioTemPermissao(header, email)) {
+				Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
+				
+				if(buscaCampanha.isEmpty()) {
+					throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+				}
+				
+				Campanha campanha = buscaCampanha.get();
+				
+				campanha.setStatus("Encerrada");
+				
+				this.campanhaRepositorio.save(campanha);
+				
+				return campanha;
+			}
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
 		}
-		
-		Campanha campanha = buscaCampanha.get();
-		
-		if(!campanha.getStatus().equals("Encerrada") || campanha.getStatus().equals("Concluída")) {
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
-		}
-		
-		campanha.setStatus("Encerrada");
-		
-		return campanha;
+		throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
 	}
 	
-	public Campanha concluiCampanha(Long id) {
-		Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
+	public Campanha concluiCampanha(Long id, String email, String header) throws ServletException {
+Optional<Usuario> usuario = this.usuarioRepositorio.findById(email);
 		
-		if(!buscaCampanha.isPresent()) {
+		if(usuario.isPresent()) {
+			if (this.usuarioServico.usuarioTemPermissao(header, email)) {
+				Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
+				
+				if(buscaCampanha.isEmpty()) {
+					throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+				}
+				
+				Campanha campanha = buscaCampanha.get();
+				
+				campanha.setStatus("Concluída");
+				
+				this.campanhaRepositorio.save(campanha);
+				
+				return campanha;
+			}
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
 		}
-		
-		Campanha campanha = buscaCampanha.get();
-		
-		if(!campanha.getStatus().equals("Encerrada") || campanha.getStatus().equals("Concluída")) {
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
-		}
-		
-		campanha.setStatus("Concluída");
-		
-		return campanha;
+		throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
 	}
 	
 	private void atualizaStatusVencido(Campanha campanha) {
 		if(campanha.getStatus().equals("Ativa")) {
 			if(campanha.getDeadline().after(new Date())) {
 				campanha.setStatus("Vencida");
+				this.campanhaRepositorio.save(campanha);
 			}
 		}
 	}

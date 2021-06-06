@@ -19,6 +19,7 @@ import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
 public class TokenFilter extends GenericFilterBean {
+	public final static int TOKEN_INDEX = 7;
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
@@ -27,12 +28,14 @@ public class TokenFilter extends GenericFilterBean {
 
 		String header = req.getHeader("Authorization");
 
-		if (header == null || header.startsWith("Bearer ")) {
+		if (header == null || !header.startsWith("Bearer ")) {
 			throw new ServletException("Token inexistente ou mal formatado!");
 		}
+		
+		String token = header.substring(TOKEN_INDEX);
 
 		try {
-			Jwts.parser().setSigningKey("TOKEN_BOLADO").parseClaimsJws(header).getBody();
+			Jwts.parser().setSigningKey("TOKEN_BOLADO").parseClaimsJws(token).getBody();
 		} catch(SignatureException | ExpiredJwtException | MalformedJwtException | PrematureJwtException | UnsupportedJwtException | IllegalArgumentException e) {
 			
 			//aqui optamos por tratar todas as exceções que podem ser lançadas da mesma forma e simplesmente

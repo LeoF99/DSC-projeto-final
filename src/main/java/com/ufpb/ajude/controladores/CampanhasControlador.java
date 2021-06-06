@@ -3,6 +3,7 @@ package com.ufpb.ajude.controladores;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,9 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+
+import javax.servlet.ServletException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -52,10 +56,10 @@ public class CampanhasControlador {
 		}
 	}
 	
-	@PutMapping("/auth/campanhas/{id}/encerra")
-	public ResponseEntity<Campanha> encerraCampanha(@PathVariable Long id) {
+	@PatchMapping("/auth/campanhas/{id}/encerra")
+	public ResponseEntity<Campanha> encerraCampanha(@PathVariable Long id, @RequestParam String email, @RequestHeader("Authorization") String header) throws ServletException {
 		try {
-			Campanha campanha = this.campanhaServico.encerraCampanha(id);
+			Campanha campanha = this.campanhaServico.encerraCampanha(id, email, header);
 			
 			return new ResponseEntity<Campanha>(campanha, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
@@ -63,10 +67,10 @@ public class CampanhasControlador {
 		}
 	}
 	
-	@PutMapping("/auth/campanhas/{id}/conclui")
-	public ResponseEntity<Campanha> concluiCampanha(@PathVariable Long id) {
+	@PatchMapping("/auth/campanhas/{id}/conclui")
+	public ResponseEntity<Campanha> concluiCampanha(@PathVariable Long id, @RequestParam String email, @RequestHeader("Authorization") String header) throws ServletException {
 		try {
-			Campanha campanha = this.campanhaServico.encerraCampanha(id);
+			Campanha campanha = this.campanhaServico.concluiCampanha(id, email, header);
 			
 			return new ResponseEntity<Campanha>(campanha, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
