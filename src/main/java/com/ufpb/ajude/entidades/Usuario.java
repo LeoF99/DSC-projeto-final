@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @AllArgsConstructor
 @Getter
 @Setter
@@ -29,6 +31,7 @@ public class Usuario {
 	
 	private String senha;
 	
+	@JsonManagedReference
 	@OneToMany(mappedBy="criador")
 	private List<Campanha> campanhas = new ArrayList<Campanha>();
 	

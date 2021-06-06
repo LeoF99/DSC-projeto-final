@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ufpb.ajude.entidades.Campanha;
 import com.ufpb.ajude.servicos.campanhaServico;
+import com.ufpb.ajude.dtos.CriaCampanhaDTO;
 
 @RestController
 public class CampanhasControlador {
@@ -26,7 +27,7 @@ public class CampanhasControlador {
 	}
 	
 	@PostMapping("/auth/campanhas")
-	public ResponseEntity<Campanha> criaCampanha(@RequestBody Campanha campanha) {
+	public ResponseEntity<Campanha> criaCampanha(@RequestBody CriaCampanhaDTO campanha) {
 		try {
 			Campanha campanhaCriada = this.campanhaServico.criaCampanha(campanha);
 			

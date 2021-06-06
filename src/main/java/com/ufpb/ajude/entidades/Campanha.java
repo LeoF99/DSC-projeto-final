@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +20,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder(builderClassName = "Builder")
 @Entity
 public class Campanha {
 	@Id
@@ -37,6 +38,7 @@ public class Campanha {
 	
 	//private Doacao[] doacoes;
 	
+	@JsonBackReference
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="criador_id")
 	private Usuario criador;
@@ -44,4 +46,15 @@ public class Campanha {
 	//private Comentario[] comentarios;
 	
 	//private Like[] likes;
+	
+	public Campanha(String nome, String descricao, Date deadline, String status, double meta, Usuario criador) {
+		super();
+		this.nome = nome;
+		this.descricao = descricao;
+		this.deadline = deadline;
+		this.status = status;
+		this.meta = meta;
+		this.criador = criador;
+	}
+
 }
