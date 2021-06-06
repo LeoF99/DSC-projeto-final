@@ -56,5 +56,9 @@ public class Campanha {
 		this.meta = meta;
 		this.criador = criador;
 	}
+	
+	public Campanha() {
+		
+	}
 
 }

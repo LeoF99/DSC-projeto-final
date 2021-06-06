@@ -2,6 +2,7 @@ package com.ufpb.ajude.servicos;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -66,6 +67,42 @@ public class campanhaServico {
 		throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
+	public List<Campanha> buscaCampanhas(String busca, boolean retornarTodas) {
+		if(busca.length() == 0) {
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		}
+		
+		List<Campanha> todasCampanhas = this.campanhaRepositorio.findAll();
+		
+		if(!retornarTodas) {
+			List<Campanha> apenasAtivas = new ArrayList<Campanha>();
+			
+			for(Campanha c : todasCampanhas) {
+				if(c.getStatus().equals("Ativa")) {
+					String nome = c.getNome().toLowerCase();
+					
+					if(nome.contains(busca.toLowerCase())) {
+						apenasAtivas.add(c);
+					}
+				}
+			}
+			
+			return apenasAtivas;
+		}
+		
+		List<Campanha> matchBusca = new ArrayList<Campanha>();
+		
+		for(Campanha c : todasCampanhas) {
+			String nome = c.getNome().toLowerCase();
+				
+			if(nome.contains(busca.toLowerCase())) {
+				matchBusca.add(c);
+			}
+		}
+		
+		return matchBusca;
+	}
+	
 	public Campanha encerraCampanha(Long id) {
 		Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
 		
@@ -100,22 +137,6 @@ public class campanhaServico {
 		campanha.setStatus("Concluída");
 		
 		return campanha;
-	}
-	
-	public List<Campanha> buscaCampanhas(String busca, boolean retornarTodas) {
-		if(busca.length() == 0) {
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
-		}
-		
-		if(retornarTodas == true) {
-			List<Campanha> todasCampanhas = this.campanhaRepositorio.buscaPorNome(busca);	
-			
-			return todasCampanhas;
-		}
-		
-		List<Campanha> campanhasAtivas = this.campanhaRepositorio.buscaPorNome(busca);
-		
-		return campanhasAtivas;
 	}
 	
 	private void atualizaStatusVencido(Campanha campanha) {

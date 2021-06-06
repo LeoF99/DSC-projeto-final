@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.HttpStatus;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ufpb.ajude.entidades.Campanha;
 import com.ufpb.ajude.servicos.campanhaServico;
 import com.ufpb.ajude.dtos.CriaCampanhaDTO;
+import com.ufpb.ajude.dtos.BuscaCampanhaDTO;
 
 @RestController
 public class CampanhasControlador {
@@ -34,6 +38,17 @@ public class CampanhasControlador {
 			return new ResponseEntity<Campanha>(campanhaCriada, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<Campanha>(e.getStatusCode());
+		}
+	}
+	
+	@GetMapping("/search/campanhas")
+	public ResponseEntity<List<Campanha>> buscaCampanhas(@RequestBody BuscaCampanhaDTO corpoBusca) {
+		try {
+			List<Campanha> campanhas = this.campanhaServico.buscaCampanhas(corpoBusca.getBusca(), corpoBusca.isRetornarTodas());
+			
+			return new ResponseEntity<List<Campanha>>(campanhas, HttpStatus.FOUND);
+		} catch (HttpClientErrorException e) {
+			return new ResponseEntity<List<Campanha>>(e.getStatusCode());
 		}
 	}
 	
