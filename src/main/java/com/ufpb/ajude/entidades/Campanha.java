@@ -1,7 +1,8 @@
 package com.ufpb.ajude.entidades;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.UUID;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,11 +10,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,7 +45,9 @@ public class Campanha {
 	@JoinColumn(name="criador_id")
 	private Usuario criador;
 	
-	//private Comentario[] comentarios;
+	@JsonIgnore
+	@OneToMany()
+	private List<Comentario> comentarios = new ArrayList<Comentario>();
 	
 	//private Like[] likes;
 	

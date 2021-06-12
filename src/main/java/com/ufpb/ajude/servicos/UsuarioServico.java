@@ -13,7 +13,6 @@ import com.ufpb.ajude.entidades.Usuario;
 import com.ufpb.ajude.repositorios.UsuarioRepositorio;
 import com.ufpb.ajude.dtos.LoginDTO;
 import com.ufpb.ajude.dtos.UsuarioRetornoDTO;
-import com.ufpb.ajude.servicos.JwtService;
 
 @Service
 public class UsuarioServico {

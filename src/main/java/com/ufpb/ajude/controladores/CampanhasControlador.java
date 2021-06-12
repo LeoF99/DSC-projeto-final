@@ -2,7 +2,6 @@ package com.ufpb.ajude.controladores;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,8 +21,10 @@ import javax.servlet.ServletException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ufpb.ajude.entidades.Campanha;
+import com.ufpb.ajude.entidades.Comentario;
 import com.ufpb.ajude.servicos.campanhaServico;
 import com.ufpb.ajude.dtos.CriaCampanhaDTO;
+import com.ufpb.ajude.dtos.CriaComentarioDTO;
 import com.ufpb.ajude.dtos.BuscaCampanhaDTO;
 import com.ufpb.ajude.dtos.AtualizaCampanhaDTO;
 
@@ -93,6 +94,28 @@ public class CampanhasControlador {
 			return new ResponseEntity<Campanha>(campanhaAtualizada, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<Campanha>(e.getStatusCode());
+		}
+	}
+	
+	@PostMapping("/auth/campanhas/comentarios")
+	public ResponseEntity<Comentario> adicionaComentario(@RequestBody CriaComentarioDTO dados) {
+		try {
+			Comentario comentario = this.campanhaServico.adicionaComentario(dados);
+			
+			return new ResponseEntity<Comentario>(comentario, HttpStatus.OK);
+		} catch (HttpClientErrorException e) {
+			return new ResponseEntity<Comentario>(e.getStatusCode());
+		}
+	}
+	
+	@PostMapping("/auth/campanhas/comentarios/{id}/respostas")
+	public ResponseEntity<Comentario> respondeComentario(@RequestBody CriaComentarioDTO dados, @PathVariable Long id) {
+		try {
+			Comentario resposta = this.campanhaServico.respondeComentario(dados, id);
+			
+			return new ResponseEntity<Comentario>(resposta, HttpStatus.OK);
+		} catch (HttpClientErrorException e) {
+			return new ResponseEntity<Comentario>(e.getStatusCode());
 		}
 	}
 }

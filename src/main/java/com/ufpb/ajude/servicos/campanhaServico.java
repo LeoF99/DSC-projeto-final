@@ -15,11 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.ufpb.ajude.repositorios.CampanhaRepositorio;
+import com.ufpb.ajude.repositorios.ComentarioRepositorio;
 import com.ufpb.ajude.entidades.Campanha;
+import com.ufpb.ajude.entidades.Comentario;
 import com.ufpb.ajude.dtos.CriaCampanhaDTO;
+import com.ufpb.ajude.dtos.CriaComentarioDTO;
 import com.ufpb.ajude.repositorios.UsuarioRepositorio;
 import com.ufpb.ajude.entidades.Usuario;
-import com.ufpb.ajude.servicos.UsuarioServico;
 import com.ufpb.ajude.dtos.AtualizaCampanhaDTO;
 
 @Service
@@ -32,6 +34,9 @@ public class campanhaServico {
 	
 	@Autowired
 	private UsuarioServico usuarioServico;
+	
+	@Autowired
+	private ComentarioRepositorio comentarioRepositorio;
 	
 	public campanhaServico(CampanhaRepositorio campanhaRepositorio, UsuarioRepositorio usuarioRepositorio) {
 		this.campanhaRepositorio = campanhaRepositorio;
@@ -184,6 +189,40 @@ public class campanhaServico {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
 		}
 		throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+	}
+	
+	public Comentario adicionaComentario(CriaComentarioDTO dados) {
+		Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(dados.getCampanha());
+		
+		if(buscaCampanha.isEmpty()) throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		Campanha campanha = buscaCampanha.get();
+		System.out.println(campanha.getDescricao());
+		Comentario comentario = new Comentario(campanha, dados.getConteudo(), dados.getCriador());
+		Comentario novoComentario = this.comentarioRepositorio.save(comentario);
+		
+		
+		campanha.getComentarios().add(novoComentario);
+		
+		this.campanhaRepositorio.save(campanha);
+		
+		return novoComentario;
+	}
+	
+	public Comentario respondeComentario(CriaComentarioDTO dados, long aResponderId) {
+		Optional<Comentario> buscaComentario = this.comentarioRepositorio.findById(aResponderId);
+		if(buscaComentario.isEmpty()) throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		
+		Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(dados.getCampanha());
+		if(buscaCampanha.isEmpty()) throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		
+		Comentario resposta = new Comentario(buscaCampanha.get(), dados.getConteudo(), dados.getCriador());
+		resposta = this.comentarioRepositorio.save(resposta);
+		
+		Comentario aResponder = buscaComentario.get();
+		aResponder.getRespostas().add(resposta);
+		this.comentarioRepositorio.save(aResponder);
+		
+		return resposta;
 	}
 	
 	private void atualizaStatusVencido(Campanha campanha) {
