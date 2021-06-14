@@ -9,11 +9,13 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @AllArgsConstructor
 @Getter
@@ -25,20 +27,32 @@ public class Comentario {
 	private long id;
 	
 	@ManyToOne()
+	@JoinColumn(name="campanha_id")
 	private Campanha campanha;
 	
 	private String conteudo;
 	
 	private String criador;
 	
-	@OneToMany(cascade = CascadeType.REMOVE)
+	@OneToMany()
 	private List<Comentario> respostas = new ArrayList<Comentario>();
 	
-	public Comentario(Campanha campanha, String conteudo, String criador) {
+	@JsonIgnore
+	@ManyToOne()
+	@JoinColumn()
+	private Comentario comentarioPai;
+	
+	public Comentario(String conteudo, String criador) {
 		super();
-		this.campanha = campanha;
 		this.conteudo = conteudo;
 		this.criador = criador;
+	}
+	
+	public Comentario(String conteudo, String criador, Comentario comentarioPai) {
+		super();
+		this.conteudo = conteudo;
+		this.criador = criador;
+		this.comentarioPai = comentarioPai;
 	}
 	
 	public Comentario() {}

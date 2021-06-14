@@ -3,6 +3,7 @@ package com.ufpb.ajude.controladores;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -114,6 +115,17 @@ public class CampanhasControlador {
 			Comentario resposta = this.campanhaServico.respondeComentario(dados, id);
 			
 			return new ResponseEntity<Comentario>(resposta, HttpStatus.OK);
+		} catch (HttpClientErrorException e) {
+			return new ResponseEntity<Comentario>(e.getStatusCode());
+		}
+	}
+	
+	@DeleteMapping("/auth/campanhas/comentarios/{id}")
+	public ResponseEntity<Comentario> removeComentario(@PathVariable Long id, @RequestParam String email, @RequestHeader("Authorization") String header) throws ServletException {
+		try {
+			Comentario comentario = this.campanhaServico.removeComentario(id, header, email);
+			
+			return new ResponseEntity<Comentario>(comentario, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<Comentario>(e.getStatusCode());
 		}

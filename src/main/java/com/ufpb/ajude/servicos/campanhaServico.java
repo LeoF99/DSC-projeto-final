@@ -118,77 +118,65 @@ public class campanhaServico {
 	}
 	
 	public Campanha encerraCampanha(Long id, String email, String header) throws ServletException {
-		Optional<Usuario> usuario = this.usuarioRepositorio.findById(email);
-		
-		if(usuario.isPresent()) {
-			if (this.usuarioServico.usuarioTemPermissao(header, email)) {
-				Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
-				
-				if(buscaCampanha.isEmpty()) {
-					throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
-				}
-				
-				Campanha campanha = buscaCampanha.get();
-				
-				campanha.setStatus("Encerrada");
-				
-				this.campanhaRepositorio.save(campanha);
-				
-				return campanha;
-			}
+		if(!this.usuarioServico.usuarioTemPermissaoRota(header, email)) {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
 		}
-		throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		
+		Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
+				
+		if(buscaCampanha.isEmpty()) {
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		}
+				
+		Campanha campanha = buscaCampanha.get();
+				
+		campanha.setStatus("Encerrada");
+				
+		this.campanhaRepositorio.save(campanha);
+				
+		return campanha;
 	}
 	
 	public Campanha concluiCampanha(Long id, String email, String header) throws ServletException {
-		Optional<Usuario> usuario = this.usuarioRepositorio.findById(email);
-		
-		if(usuario.isPresent()) {
-			if (this.usuarioServico.usuarioTemPermissao(header, email)) {
-				Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
-				
-				if(buscaCampanha.isEmpty()) {
-					throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
-				}
-				
-				Campanha campanha = buscaCampanha.get();
-				
-				campanha.setStatus("Concluída");
-				
-				this.campanhaRepositorio.save(campanha);
-				
-				return campanha;
-			}
+		if(!this.usuarioServico.usuarioTemPermissaoRota(header, email)) {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
 		}
-		throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		
+		Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
+				
+		if(buscaCampanha.isEmpty()) {
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		}
+				
+		Campanha campanha = buscaCampanha.get();
+			
+		campanha.setStatus("Concluída");
+				
+		this.campanhaRepositorio.save(campanha);
+				
+		return campanha;
 	}
 	
 	public Campanha atualizaCampanha(Long id, AtualizaCampanhaDTO campanha, String email, String header) throws ServletException, ParseException {
-		Optional<Usuario> usuario = this.usuarioRepositorio.findById(email);
-		
-		if(usuario.isPresent()) {
-			if(this.usuarioServico.usuarioTemPermissao(header, email)) {
-				Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
-				
-				if(buscaCampanha.isEmpty()) {
-					throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
-				}
-				
-				Campanha campanhaAtualizada = buscaCampanha.get();
-				
-				campanhaAtualizada.setDescricao(campanha.getDescricao());
-				campanhaAtualizada.setDeadline(new SimpleDateFormat("dd/MM/yyyy").parse(campanha.getDeadline()));
-				campanhaAtualizada.setMeta(campanha.getMeta());
-				
-				this.campanhaRepositorio.save(campanhaAtualizada);
-				
-				return campanhaAtualizada;
-			}
+		if(!this.usuarioServico.usuarioTemPermissaoRota(header, email)) {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
 		}
-		throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		
+		Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
+				
+		if(buscaCampanha.isEmpty()) {
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		}
+				
+		Campanha campanhaAtualizada = buscaCampanha.get();
+				
+		campanhaAtualizada.setDescricao(campanha.getDescricao());
+		campanhaAtualizada.setDeadline(new SimpleDateFormat("dd/MM/yyyy").parse(campanha.getDeadline()));
+		campanhaAtualizada.setMeta(campanha.getMeta());
+			
+		this.campanhaRepositorio.save(campanhaAtualizada);
+				
+		return campanhaAtualizada;
 	}
 	
 	public Comentario adicionaComentario(CriaComentarioDTO dados) {
@@ -197,7 +185,7 @@ public class campanhaServico {
 		if(buscaCampanha.isEmpty()) throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
 		Campanha campanha = buscaCampanha.get();
 		System.out.println(campanha.getDescricao());
-		Comentario comentario = new Comentario(campanha, dados.getConteudo(), dados.getCriador());
+		Comentario comentario = new Comentario(dados.getConteudo(), dados.getCriador());
 		Comentario novoComentario = this.comentarioRepositorio.save(comentario);
 		
 		
@@ -214,15 +202,31 @@ public class campanhaServico {
 		
 		Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(dados.getCampanha());
 		if(buscaCampanha.isEmpty()) throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		Comentario aResponder = buscaComentario.get();
 		
-		Comentario resposta = new Comentario(buscaCampanha.get(), dados.getConteudo(), dados.getCriador());
+		Comentario resposta = new Comentario(dados.getConteudo(), dados.getCriador(), aResponder);
 		resposta = this.comentarioRepositorio.save(resposta);
 		
-		Comentario aResponder = buscaComentario.get();
 		aResponder.getRespostas().add(resposta);
 		this.comentarioRepositorio.save(aResponder);
 		
 		return resposta;
+	}
+	
+	public Comentario removeComentario(long comentarioId, String authorizationHeader, String email) throws ServletException {
+		if(!this.usuarioServico.usuarioTemPermissaoRota(authorizationHeader, email)) {
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		}
+		
+		Optional<Comentario> buscaComentario = this.comentarioRepositorio.findById(comentarioId);
+		
+		if(buscaComentario.isEmpty()) throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		
+		Comentario comentario = buscaComentario.get();
+		
+		this.comentarioRepositorio.delete(comentario);
+		
+		return comentario;
 	}
 	
 	private void atualizaStatusVencido(Campanha campanha) {

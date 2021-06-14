@@ -19,7 +19,7 @@ public class AjudeApplication {
 	public FilterRegistrationBean<TokenFilter> filterJwt() {
 		FilterRegistrationBean<TokenFilter> filterRB = new FilterRegistrationBean<TokenFilter>();
 		filterRB.setFilter(new TokenFilter());
-		filterRB.addUrlPatterns("/auth/campanhas");
+		filterRB.addUrlPatterns("/auth/campanhas", "/auth/campanhas/comentarios", "/auth/campanhas/comentarios/respostas");
 		return filterRB;
 	}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -11,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -41,12 +44,12 @@ public class Campanha {
 	//private Doacao[] doacoes;
 	
 	@JsonBackReference
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne()
 	@JoinColumn(name="criador_id")
 	private Usuario criador;
 	
 	@JsonIgnore
-	@OneToMany()
+	@OneToMany(mappedBy = "campanha")
 	private List<Comentario> comentarios = new ArrayList<Comentario>();
 	
 	//private Like[] likes;
@@ -64,5 +67,4 @@ public class Campanha {
 	public Campanha() {
 		
 	}
-
 }

@@ -3,7 +3,6 @@ package com.ufpb.ajude.servicos;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import java.util.Optional;
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +23,6 @@ public class UsuarioServico {
 	
 	public UsuarioServico() {
 		super();
-	}
-	
-	@PostConstruct
-	public void initDisciplinas() {
-		Usuario usuario = new Usuario("email@email.com", "Leo", "Silva", "12345", "12345", null);
-		
-		this.usuarioRepositorio.save(usuario);
 	}
 	
 	public UsuarioRetornoDTO criaUsuario(Usuario usuario) {
@@ -54,5 +46,18 @@ public class UsuarioServico {
 		String subject = jwtService.getSujeitoDoToken(authorizationHeader);
 		Optional<Usuario> optUsuario = this.usuarioRepositorio.findById(subject);
 		return optUsuario.isPresent() && optUsuario.get().getEmail().equals(email);
+	}
+	
+	public boolean usuarioTemPermissaoRota(String authorizationHeader, String email) throws ServletException {
+		Optional<Usuario> usuario = this.usuarioRepositorio.findById(email);
+		
+		if(usuario.isPresent()) {
+			if(this.usuarioTemPermissao(authorizationHeader, email)) {
+				return true;
+			}
+			return false;
+		}
+		
+		return false;
 	}
 }
