@@ -37,7 +37,9 @@ public class Campanha {
 	
 	private double meta;
 	
-	//private Doacao[] doacoes;
+	@JsonIgnore
+	@OneToMany()
+	private List<Doacao> doacoes = new ArrayList<Doacao>();
 	
 	@JsonBackReference
 	@ManyToOne()
