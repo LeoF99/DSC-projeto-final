@@ -27,12 +27,13 @@ public class Comentario {
 	private long id;
 	
 	@ManyToOne()
-	@JoinColumn(name="campanha_id")
 	private Campanha campanha;
 	
 	private String conteudo;
 	
 	private String criador;
+	
+	private boolean deletada = false;
 	
 	@OneToMany()
 	private List<Comentario> respostas = new ArrayList<Comentario>();

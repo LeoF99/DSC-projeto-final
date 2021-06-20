@@ -224,7 +224,9 @@ public class campanhaServico {
 		
 		Comentario comentario = buscaComentario.get();
 		
-		this.comentarioRepositorio.delete(comentario);
+		comentario.setDeletada(true);
+		
+		this.comentarioRepositorio.save(comentario);
 		
 		return comentario;
 	}

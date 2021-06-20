@@ -49,7 +49,7 @@ public class Campanha {
 	private Usuario criador;
 	
 	@JsonIgnore
-	@OneToMany(mappedBy = "campanha")
+	@OneToMany()
 	private List<Comentario> comentarios = new ArrayList<Comentario>();
 	
 	//private Like[] likes;
