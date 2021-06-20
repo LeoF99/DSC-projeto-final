@@ -119,7 +119,7 @@ public class campanhaServico {
 	
 	public Campanha encerraCampanha(Long id, String email, String header) throws ServletException {
 		if(!this.usuarioServico.usuarioTemPermissaoRota(header, email)) {
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED);
 		}
 		
 		Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
@@ -139,7 +139,7 @@ public class campanhaServico {
 	
 	public Campanha concluiCampanha(Long id, String email, String header) throws ServletException {
 		if(!this.usuarioServico.usuarioTemPermissaoRota(header, email)) {
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED);
 		}
 		
 		Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
@@ -159,7 +159,7 @@ public class campanhaServico {
 	
 	public Campanha atualizaCampanha(Long id, AtualizaCampanhaDTO campanha, String email, String header) throws ServletException, ParseException {
 		if(!this.usuarioServico.usuarioTemPermissaoRota(header, email)) {
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED);
 		}
 		
 		Optional<Campanha> buscaCampanha = this.campanhaRepositorio.findById(id);
@@ -215,7 +215,7 @@ public class campanhaServico {
 	
 	public Comentario removeComentario(long comentarioId, String authorizationHeader, String email) throws ServletException {
 		if(!this.usuarioServico.usuarioTemPermissaoRota(authorizationHeader, email)) {
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED);
 		}
 		
 		Optional<Comentario> buscaComentario = this.comentarioRepositorio.findById(comentarioId);
