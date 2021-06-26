@@ -3,6 +3,8 @@ package com.ufpb.ajude.servicos;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -20,12 +22,13 @@ import com.ufpb.ajude.entidades.Campanha;
 import com.ufpb.ajude.entidades.Comentario;
 import com.ufpb.ajude.dtos.CriaCampanhaDTO;
 import com.ufpb.ajude.dtos.CriaComentarioDTO;
+import com.ufpb.ajude.dtos.RecuperaCampanhaRespostaDTO;
 import com.ufpb.ajude.repositorios.UsuarioRepositorio;
 import com.ufpb.ajude.entidades.Usuario;
 import com.ufpb.ajude.dtos.AtualizaCampanhaDTO;
 
 @Service
-public class campanhaServico {
+public class CampanhaServico {
 	@Autowired
 	private CampanhaRepositorio campanhaRepositorio;
 	
@@ -38,7 +41,7 @@ public class campanhaServico {
 	@Autowired
 	private ComentarioRepositorio comentarioRepositorio;
 	
-	public campanhaServico(CampanhaRepositorio campanhaRepositorio, UsuarioRepositorio usuarioRepositorio) {
+	public CampanhaServico(CampanhaRepositorio campanhaRepositorio, UsuarioRepositorio usuarioRepositorio) {
 		this.campanhaRepositorio = campanhaRepositorio;
 		this.usuarioRepositorio = usuarioRepositorio;
 	}
@@ -229,6 +232,68 @@ public class campanhaServico {
 		this.comentarioRepositorio.save(comentario);
 		
 		return comentario;
+	}
+	
+	public List<RecuperaCampanhaRespostaDTO> recuperarCampanhasAtivas(int estrategia) {
+		List<Campanha> campanhas = new ArrayList<Campanha>();
+		
+		if(estrategia == 1) campanhas = this.estrategia1();
+		
+		if(estrategia == 2) campanhas = this.estrategia2();
+		
+		if(estrategia == 3) campanhas = this.estrategia3();
+		
+		return this.converteParaRespostaDTO(campanhas);
+	}
+	
+	private List<RecuperaCampanhaRespostaDTO> converteParaRespostaDTO(List<Campanha> campanhas) {
+		List<RecuperaCampanhaRespostaDTO> temp = new ArrayList<RecuperaCampanhaRespostaDTO>();
+		
+		for(Campanha c : campanhas) {
+			temp.add(new RecuperaCampanhaRespostaDTO(c.getId(), c.getNome(), c.getDeadline(), c.getStatus(), c.getMeta()));
+		}
+		
+		return temp;
+	}
+	
+	private List<Campanha> estrategia1() {
+		List<Campanha> campanhas = this.campanhaRepositorio.findByStatus("Ativa");
+		
+		Collections.sort(campanhas, new Comparator<Campanha>() {
+			@Override
+			public int compare(Campanha c1, Campanha c2) {
+				return Double.compare(c2.getMeta(), c1.getMeta());
+			}
+		});
+		
+		return campanhas;
+	}
+	
+	private List<Campanha> estrategia2() {
+		List<Campanha> campanhas = this.campanhaRepositorio.findByStatus("Ativa");
+		
+		Collections.sort(campanhas, new Comparator<Campanha>() {
+			@SuppressWarnings("deprecation")
+			@Override
+			public int compare(Campanha c1, Campanha c2) {
+				return Double.compare(c2.getDeadline().getDate(), c1.getDeadline().getDate());
+			}
+		});
+		
+		return campanhas;
+	}
+	
+	private List<Campanha> estrategia3() {
+		List<Campanha> campanhas = this.campanhaRepositorio.findByStatus("Ativa");
+		
+		Collections.sort(campanhas, new Comparator<Campanha>() {
+			@Override
+			public int compare(Campanha c1, Campanha c2) {
+				return Double.compare(c2.getLikes().size(), c1.getLikes().size());
+			}
+		});
+		
+		return campanhas;
 	}
 	
 	private void atualizaStatusVencido(Campanha campanha) {

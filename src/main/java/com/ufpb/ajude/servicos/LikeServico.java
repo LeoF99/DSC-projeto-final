@@ -71,10 +71,16 @@ public class LikeServico {
 	}
 	
 	private Campanha removeLikeCampanha(Campanha campanha, List<Like> likes, String email) {
+		Like likeARemover = null;
+		
 		for(Like l : likes) {
 			if(l.getUsuario().equals(email)) {
-				likes.remove(l);
+				likeARemover = l;
 			}
+		}
+		
+		if(likeARemover != null) {			
+			likes.remove(likeARemover);
 		}
 		
 		campanha.setLikes(likes);

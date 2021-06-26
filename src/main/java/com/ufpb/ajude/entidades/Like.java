@@ -25,4 +25,8 @@ public class Like {
 		super();
 		this.usuario = usuario;
 	}
+	
+	public Like() {
+		
+	}
 }

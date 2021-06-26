@@ -23,18 +23,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ufpb.ajude.entidades.Campanha;
 import com.ufpb.ajude.entidades.Comentario;
-import com.ufpb.ajude.servicos.campanhaServico;
+import com.ufpb.ajude.servicos.CampanhaServico;
 import com.ufpb.ajude.dtos.CriaCampanhaDTO;
 import com.ufpb.ajude.dtos.CriaComentarioDTO;
+import com.ufpb.ajude.dtos.RecuperaCampanhaRespostaDTO;
 import com.ufpb.ajude.dtos.BuscaCampanhaDTO;
 import com.ufpb.ajude.dtos.AtualizaCampanhaDTO;
 
 @RestController
 public class CampanhasControlador {
 	@Autowired
-	campanhaServico campanhaServico;
+	CampanhaServico campanhaServico;
 	
-	public CampanhasControlador(campanhaServico campanhaServico) {
+	public CampanhasControlador(CampanhaServico campanhaServico) {
 		this.campanhaServico = campanhaServico;
 	}
 	
@@ -129,5 +130,10 @@ public class CampanhasControlador {
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<Comentario>(e.getStatusCode());
 		}
+	}
+	
+	@GetMapping("/campanhas")
+	public ResponseEntity<List<RecuperaCampanhaRespostaDTO>> recuperarCampanhasAtivas(@RequestParam Integer estrategia) {
+		return new ResponseEntity<List<RecuperaCampanhaRespostaDTO>>(this.campanhaServico.recuperarCampanhasAtivas(estrategia), HttpStatus.OK);
 	}
 }
