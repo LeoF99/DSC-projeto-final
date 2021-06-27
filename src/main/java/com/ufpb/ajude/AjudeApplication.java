@@ -8,12 +8,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ufpb.ajude.seguranca.TokenFilter;
 
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
 @SpringBootApplication
 @RestController
+@EnableSwagger2
 public class AjudeApplication {
 	@Bean
 	public FilterRegistrationBean<TokenFilter> filterJwt() {

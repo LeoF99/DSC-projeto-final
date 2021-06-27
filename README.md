@@ -1,29 +1,13 @@
 # DSC-projeto-final
 
-Foobar is a Python library for dealing with word pluralization.
+Esse projeto foi feito durante a disciplina de Desenvolvimento de Software Corporativo, e tem toda sua descrição disponível em: [link](https://docs.google.com/document/u/2/d/e/2PACX-1vTjnwm3SrhtdcLoHMvDa0lf_zKjsRIXv9yO1NmCidcN8XRQg9hzKxx3Raxcfue-wv0xvDVykjOo7mBe/pub)
 
-## Installation
+## Documentação
+Para acessar a documentação Swagger, acesse a seguinte URL: [`http://localhost:8080//swagger-ui.html`](http://localhost:8080//swagger-ui.html)
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+Se preferir fazer os testes da aplicação pelo Insomnia ou pelo Postman, você pode utilizar a collection JSON fornecida, localizada na pasta *docs*, na raiz do projeto.
 
-```bash
-pip install foobar
-```
+Basta importá-la, em um dos dois softwares, e começar a utilizá-la.
 
-## Usage
-
-```python
-import foobar
-
-foobar.pluralize('word') # returns 'words'
-foobar.pluralize('goose') # returns 'geese'
-foobar.singularize('phenomena') # returns 'phenomenon'
-```
-
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
-
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
+## Video da apresentação
+[Video](https://choosealicense.com/licenses/mit/)
