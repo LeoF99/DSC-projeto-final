@@ -10,4 +10,6 @@ Se preferir fazer os testes da aplicação pelo Insomnia ou pelo Postman, você 
 Basta importá-la, em um dos dois softwares, e começar a utilizá-la.
 
 ## Video da apresentação
-[Video](https://choosealicense.com/licenses/mit/)
+[Video](https://drive.google.com/file/d/1ZT5fNpUSB9p2qwu4pLJoeTs-GzeQo7az/view?usp=sharing)
+
+** O video só pode ser visto por pessoas logadas com e-mail DCX!!
